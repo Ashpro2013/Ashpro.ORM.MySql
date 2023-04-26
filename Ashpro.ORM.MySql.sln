@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33620.401
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ashpro.ORM.MySql", "Ashpro.ORM.MySql\Ashpro.ORM.MySql.csproj", "{DDBAB743-ED43-4BD0-A334-E037F8FEC33C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DDBAB743-ED43-4BD0-A334-E037F8FEC33C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDBAB743-ED43-4BD0-A334-E037F8FEC33C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDBAB743-ED43-4BD0-A334-E037F8FEC33C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDBAB743-ED43-4BD0-A334-E037F8FEC33C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5BF988C4-1824-49C3-8865-C41ABB2061C7}
+	EndGlobalSection
+EndGlobal

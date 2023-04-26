@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Mohammed Ashraf</Authors>
+    <Company>Ashpro</Company>
+    <Description>This is micro ORM for MySQL as a wrpper class upon ado.net</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AshproStringExtension" Version="3.1.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.33" />
+  </ItemGroup>
+
+</Project>
