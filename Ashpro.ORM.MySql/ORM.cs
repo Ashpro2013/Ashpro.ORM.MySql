@@ -316,7 +316,7 @@ namespace Ashpro.ORM.MySql
                         bool iIncluded = false;
                         string sColumn = string.Empty;
                         string Query = string.Empty;
-                        List<Common> iCommon = new List<Common>();
+                        List<int> iCommon = new List<int>();
                         values.Clear();
                         foreach (DataColumn item in data.Table.Columns)
                         {
@@ -333,7 +333,7 @@ namespace Ashpro.ORM.MySql
                         }
                         if (sValue != null && sValue != string.Empty)
                         {
-                            iIncluded = iCommon.Any(x => x.id == Convert.ToInt32(sValue));
+                            iIncluded = iCommon.Any(x => x == Convert.ToInt32(sValue));
                             if (iIncluded)
                             {
                                 Query = await getUpdateCommandAsync(table, values, sColumn, sValue);
@@ -369,18 +369,18 @@ namespace Ashpro.ORM.MySql
         public static async Task<bool> UpdateAsync(List<object> newDatas, List<object> oldDatas, string sTable, string sColumn, string sCon = null)
         {
             sCon = sCon ?? DBConnection.Connection;
-            var newList = new List<Common>();
-            var oldList = new List<Common>();
+            var newList = new List<int>();
+            var oldList = new List<int>();
             newList = await GetIdListAsync(newDatas, sColumn);
             oldList = await GetIdListAsync(oldDatas, sColumn);
             try
             {
-                foreach (Common item in oldList)
+                foreach (int item in oldList)
                 {
-                    bool included = newList.Any(x => x.id == item.id);
+                    bool included = newList.Any(x => x == item);
                     if (!included)
                     {
-                        await DeleteAsync(sTable, sColumn, item.id, sCon);
+                        await DeleteAsync(sTable, sColumn, item, sCon);
                     }
                 }
             }
@@ -388,12 +388,10 @@ namespace Ashpro.ORM.MySql
             {
                 throw ex;
             }
-            foreach (Common item in newList)
+            foreach (int item in newList)
             {
-                bool included = oldList.Any(x => x.id == item.id);
-                if (!included)
+                if (!oldList.Any(x => x == item))
                 {
-                    int? sVal = item.id;
                     try
                     {
                         foreach (var obj in newDatas)
@@ -403,7 +401,7 @@ namespace Ashpro.ORM.MySql
                                 if (x.Name == sColumn)
                                 {
                                     int? iVal = x.GetValue(obj, null).ToInt32();
-                                    if (iVal == sVal)
+                                    if (iVal == item)
                                     {
                                         await InsertAsync(obj, sTable, sCon);
                                         break;
@@ -420,7 +418,6 @@ namespace Ashpro.ORM.MySql
                 }
                 else
                 {
-                    int? sVal = item.id;
                     try
                     {
                         foreach (var obj in newDatas)
@@ -430,9 +427,9 @@ namespace Ashpro.ORM.MySql
                                 if (x.Name == sColumn)
                                 {
                                     int? iVal = x.GetValue(obj, null).ToInt32();
-                                    if (iVal == sVal)
+                                    if (iVal == item)
                                     {
-                                        await UpdateAsync(obj, sTable, sColumn, sVal.ToInt32(), sCon);
+                                        await UpdateAsync(obj, sTable, sColumn, item, sCon);
                                         break;
                                     }
                                 }
@@ -755,7 +752,7 @@ namespace Ashpro.ORM.MySql
                         bool iIncluded = false;
                         string sColumn = string.Empty;
                         string Query = string.Empty;
-                        List<Common> iCommon = new List<Common>();
+                        List<int> iCommon = new List<int>();
                         values.Clear();
                         foreach (DataColumn item in data.Table.Columns)
                         {
@@ -772,7 +769,7 @@ namespace Ashpro.ORM.MySql
                         }
                         if (sValue != null && sValue != string.Empty)
                         {
-                            iIncluded = iCommon.Any(x => x.id == Convert.ToInt32(sValue));
+                            iIncluded = iCommon.Any(x => x == Convert.ToInt32(sValue));
                             if (iIncluded)
                             {
                                 Query = getUpdateCommand(table, values, sColumn, sValue);
@@ -806,18 +803,18 @@ namespace Ashpro.ORM.MySql
         }
         public static bool UpdateDatabase(List<object> newDatas, List<object> oldDatas, string sTable, string sColumn, string sCon = null)
         {
-            List<Common> newList = new List<Common>();
-            List<Common> oldList = new List<Common>();
+            List<int> newList = new List<int>();
+            List<int> oldList = new List<int>();
             newList = GetIdList(newDatas, sColumn);
             oldList = GetIdList(oldDatas, sColumn);
             try
             {
-                foreach (Common item in oldList)
+                foreach (int item in oldList)
                 {
-                    bool included = newList.Any(x => x.id == item.id);
+                    bool included = newList.Any(x => x == item);
                     if (!included)
                     {
-                        DeleteFromDatabase(sTable, sColumn, item.id, sCon);
+                        DeleteFromDatabase(sTable, sColumn, item, sCon);
                     }
                 }
             }
@@ -825,12 +822,10 @@ namespace Ashpro.ORM.MySql
             {
                 throw ex;
             }
-            foreach (Common item in newList)
+            foreach (int item in newList)
             {
-                bool included = oldList.Any(x => x.id == item.id);
-                if (!included)
+                if (!oldList.Any(x => x == item))
                 {
-                    int? sVal = item.id;
                     try
                     {
                         foreach (var obj in newDatas)
@@ -840,7 +835,7 @@ namespace Ashpro.ORM.MySql
                                 if (x.Name == sColumn)
                                 {
                                     int? iVal = x.GetValue(obj, null).ToInt32();
-                                    if (iVal == sVal)
+                                    if (iVal == item)
                                     {
                                         InsertToDatabaseObj(obj, sTable, sCon);
                                         break;
@@ -857,7 +852,6 @@ namespace Ashpro.ORM.MySql
                 }
                 else
                 {
-                    int? sVal = item.id;
                     try
                     {
                         foreach (var obj in newDatas)
@@ -867,9 +861,9 @@ namespace Ashpro.ORM.MySql
                                 if (x.Name == sColumn)
                                 {
                                     int? iVal = x.GetValue(obj, null).ToInt32();
-                                    if (iVal == sVal)
+                                    if (iVal == item)
                                     {
-                                        UpdateToDatabaseObj(obj, sTable, sColumn, sVal.ToInt32(), sCon);
+                                        UpdateToDatabaseObj(obj, sTable, sColumn, item, sCon);
                                         break;
                                     }
                                 }
@@ -900,16 +894,16 @@ namespace Ashpro.ORM.MySql
                 {
                     sColumn = item.Table.Columns[0].ColumnName;
                 }
-                List<Common> newList = new List<Common>();
-                List<Common> oldList = new List<Common>();
+                List<int> newList = new List<int>();
+                List<int> oldList = new List<int>();
                 newList = await GetIdListAsync(newDt);
                 oldList = await GetIdListAsync(oldDt);
-                foreach (Common item in oldList)
+                foreach (int item in oldList)
                 {
-                    bool included = newList.Any(x => x.id == item.id);
+                    bool included = newList.Any(x => x == item);
                     if (!included)
                     {
-                        await DeleteAsync(sTable, sColumn, item.id, sCon);
+                        await DeleteAsync(sTable, sColumn, item, sCon);
                     }
                 }
             }
@@ -918,17 +912,15 @@ namespace Ashpro.ORM.MySql
                 throw;
             }
         }
-        private static async Task<List<Common>> GetCommonAsync(string sTable, string sColumn, string sCon = null)
+        private static async Task<List<int>> GetCommonAsync(string sTable, string sColumn, string sCon = null)
         {
             try
             {
-                List<Common> iCommon = new List<Common>();
+                List<int> iCommon = new List<int>();
                 var dt = await GetDataTableAsync("Select " + sColumn + " From " + sTable, sCon);
                 foreach (DataRow drw in dt.Rows)
                 {
-                    Common cmn = new Common();
-                    cmn.id = Convert.ToInt32(drw[0].ToString());
-                    iCommon.Add(cmn);
+                    iCommon.Add(drw[0].ToInt32());
                 }
                 return iCommon;
             }
@@ -937,21 +929,21 @@ namespace Ashpro.ORM.MySql
                 throw;
             }
         }
-        private static async Task<List<Common>> GetIdListAsync(List<object> data, string sColumn)
+        private static async Task<List<int>> GetIdListAsync(List<object> data, string sColumn)
         {
-            var value = await Task.Run<List<Common>>(() =>
+            var value = await Task.Run<List<int>>(() =>
             {
                 try
                 {
-                    List<Common> iCommon = new List<Common>();
+                    List<int> iCommon = new List<int>();
                     foreach (var obj in data)
                     {
                         foreach (var item in obj.GetType().GetProperties())
                         {
-                            Common cmn = new Common();
+                            int cmn = new int();
                             if (item.Name == sColumn)
                             {
-                                cmn.id = item.GetValue(obj, null).ToInt32();
+                                cmn = item.GetValue(obj, null).ToInt32();
                                 iCommon.Add(cmn);
                                 break;
                             }
@@ -966,17 +958,17 @@ namespace Ashpro.ORM.MySql
             });
             return value;
         }
-        private static async Task<List<Common>> GetIdListAsync(DataTable sTable)
+        private static async Task<List<int>> GetIdListAsync(DataTable sTable)
         {
-            var value = await Task.Run<List<Common>>(() =>
+            var value = await Task.Run<List<int>>(() =>
             {
                 try
                 {
-                    List<Common> iCommon = new List<Common>();
+                    List<int> iCommon = new List<int>();
                     foreach (DataRow drw in sTable.Rows)
                     {
-                        Common cmn = new Common();
-                        cmn.id = Convert.ToInt32(drw[0].ToString());
+                        int cmn = new int();
+                        cmn = Convert.ToInt32(drw[0].ToString());
                         iCommon.Add(cmn);
                         continue;
                     }
@@ -1297,16 +1289,16 @@ namespace Ashpro.ORM.MySql
                 {
                     sColumn = item.Table.Columns[0].ColumnName;
                 }
-                List<Common> newList = new List<Common>();
-                List<Common> oldList = new List<Common>();
+                List<int> newList = new List<int>();
+                List<int> oldList = new List<int>();
                 newList = GetIdList(newDt);
                 oldList = GetIdList(oldDt);
-                foreach (Common item in oldList)
+                foreach (int item in oldList)
                 {
-                    bool included = newList.Any(x => x.id == item.id);
+                    bool included = newList.Any(x => x == item);
                     if (!included)
                     {
-                        DeleteFromDatabase(sTable, sColumn, item.id, sCon);
+                        DeleteFromDatabase(sTable, sColumn, item, sCon);
                     }
                 }
             }
@@ -1315,17 +1307,15 @@ namespace Ashpro.ORM.MySql
                 throw;
             }
         }
-        private static List<Common> GetCommon(string sTable, string sColumn, string sCon = null)
+        private static List<int> GetCommon(string sTable, string sColumn, string sCon = null)
         {
             try
             {
-                List<Common> iCommon = new List<Common>();
+                List<int> iCommon = new List<int>();
                 var dt = GetDataTable("Select " + sColumn + " From " + sTable, sCon);
                 foreach (DataRow drw in dt.Rows)
                 {
-                    Common cmn = new Common();
-                    cmn.id = Convert.ToInt32(drw[0].ToString());
-                    iCommon.Add(cmn);
+                    iCommon.Add(drw[0].ToInt32());
                 }
                 return iCommon;
             }
@@ -1334,19 +1324,18 @@ namespace Ashpro.ORM.MySql
                 throw;
             }
         }
-        private static List<Common> GetIdList(List<object> data, string sColumn)
+        private static List<int> GetIdList(List<object> data, string sColumn)
         {
             try
             {
-                List<Common> iCommon = new List<Common>();
+                List<int> iCommon = new List<int>();
                 foreach (var obj in data)
                 {
                     foreach (var item in obj.GetType().GetProperties())
                     {
-                        Common cmn = new Common();
                         if (item.Name == sColumn)
                         {
-                            cmn.id = item.GetValue(obj, null).ToInt32();
+                            var cmn = item.GetValue(obj, null).ToInt32();
                             iCommon.Add(cmn);
                             break;
                         }
@@ -1359,16 +1348,14 @@ namespace Ashpro.ORM.MySql
                 throw;
             }
         }
-        private static List<Common> GetIdList(DataTable sTable)
+        private static List<int> GetIdList(DataTable sTable)
         {
             try
             {
-                List<Common> iCommon = new List<Common>();
+                List<int> iCommon = new List<int>();
                 foreach (DataRow drw in sTable.Rows)
                 {
-                    Common cmn = new Common();
-                    cmn.id = Convert.ToInt32(drw[0].ToString());
-                    iCommon.Add(cmn);
+                    iCommon.Add(drw[0].ToInt32());
                     continue;
                 }
                 return iCommon;
@@ -1747,12 +1734,12 @@ namespace Ashpro.ORM.MySql
             {
                 if (oldList.Count > 0)
                 {
-                    foreach (Common item in oldList)
+                    foreach (int item in oldList)
                     {
-                        bool included = newList.Any(x => x.id == item.id);
+                        bool included = newList.Any(x => x == item);
                         if (!included)
                         {
-                            DeleteMethod_SP(item.id, "spDelete" + sTable, sCon);
+                            DeleteMethod_SP(item, "spDelete" + sTable, sCon);
                         }
                     }
                 }
@@ -1761,12 +1748,10 @@ namespace Ashpro.ORM.MySql
             {
                 throw ex;
             }
-            foreach (Common item in newList)
+            foreach (int item in newList)
             {
-                bool included = oldList.Any(x => x.id == item.id);
-                if (!included)
+                if (!oldList.Any(x => x == item))
                 {
-                    int? sVal = item.id;
                     try
                     {
                         foreach (var obj in newDatas)
@@ -1776,7 +1761,7 @@ namespace Ashpro.ORM.MySql
                                 if (x.Name == sColumn)
                                 {
                                     int? iVal = x.GetValue(obj, null).ToInt32();
-                                    if (iVal == sVal)
+                                    if (iVal == item)
                                     {
                                         InsertMethod_SP(obj, "spInsert" + sTable, sCon);
                                         break;
@@ -1794,7 +1779,6 @@ namespace Ashpro.ORM.MySql
                 }
                 else
                 {
-                    int? sVal = item.id;
                     try
                     {
                         foreach (var obj in newDatas)
@@ -1804,7 +1788,7 @@ namespace Ashpro.ORM.MySql
                                 if (x.Name == sColumn)
                                 {
                                     int? iVal = x.GetValue(obj, null).ToInt32();
-                                    if (iVal == sVal)
+                                    if (iVal == item)
                                     {
                                         UpdateMethod_SP(obj, "spUpdate" + sTable, sCon);
                                     }
@@ -2441,12 +2425,12 @@ namespace Ashpro.ORM.MySql
             {
                 if (oldList.Count > 0)
                 {
-                    foreach (Common item in oldList)
+                    foreach (int item in oldList)
                     {
-                        bool included = newList.Any(x => x.id == item.id);
+                        bool included = newList.Any(x => x == item);
                         if (!included)
                         {
-                            await DeleteAsync_SP(item.id, "spDelete" + sTable, sCon);
+                            await DeleteAsync_SP(item, "spDelete" + sTable, sCon);
                         }
                     }
                 }
@@ -2455,12 +2439,11 @@ namespace Ashpro.ORM.MySql
             {
                 throw ex;
             }
-            foreach (Common item in newList)
+            foreach (int item in newList)
             {
-                bool included = oldList.Any(x => x.id == item.id);
+                bool included = oldList.Any(x => x == item);
                 if (!included)
                 {
-                    int? sVal = item.id;
                     try
                     {
                         foreach (var obj in newDatas)
@@ -2470,7 +2453,7 @@ namespace Ashpro.ORM.MySql
                                 if (x.Name == sColumn)
                                 {
                                     int? iVal = x.GetValue(obj, null).ToInt32();
-                                    if (iVal == sVal)
+                                    if (iVal == item)
                                     {
                                         await InsertAsync_SP(obj, "spInsert" + sTable, sCon);
                                         break;
@@ -2488,7 +2471,6 @@ namespace Ashpro.ORM.MySql
                 }
                 else
                 {
-                    int? sVal = item.id;
                     try
                     {
                         foreach (var obj in newDatas)
@@ -2498,7 +2480,7 @@ namespace Ashpro.ORM.MySql
                                 if (x.Name == sColumn)
                                 {
                                     int? iVal = x.GetValue(obj, null).ToInt32();
-                                    if (iVal == sVal)
+                                    if (iVal == item)
                                     {
                                         await UpdateAsync_SP(obj, "spUpdate" + sTable, sCon);
                                     }
