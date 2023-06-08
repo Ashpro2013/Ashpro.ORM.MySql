@@ -1179,6 +1179,69 @@ namespace Ashpro.ORM.MySql
                             {
                                 prop.SetValue(t, val, null);
                             }
+                            catch(NullReferenceException ex)
+                            {
+                                try
+                                {
+                                    string s = ex.Message + sval;
+                                    switch (prop.PropertyType.Name)
+                                    {
+                                        case "String":
+                                            prop.SetValue(t, sval, null);
+                                            break;
+                                        case "DateTime":
+                                            prop.SetValue(t, sval.toDateTime(), null);
+                                            break;
+                                        case "Int64":
+                                            prop.SetValue(t, sval.ToInt32(), null);
+                                            break;
+                                        case "Int32":
+                                            prop.SetValue(t, sval.ToInt32(), null);
+                                            break;
+                                        case "Decimal":
+                                            prop.SetValue(t, sval.ToDecimal(), null);
+                                            break;
+                                        case "Boolean":
+                                            prop.SetValue(t, sval.ToBool(), null);
+                                            break;
+                                        case "Nullable`1":
+                                            if (prop.PropertyType.FullName.Contains("System.Int32"))
+                                            {
+                                                if (sval != string.Empty)
+                                                {
+                                                    prop.SetValue(t, sval.ToInt32(), null);
+                                                }
+                                            }
+                                            else if (prop.PropertyType.FullName.Contains("System.Boolean"))
+                                            {
+                                                if (sval != string.Empty)
+                                                {
+                                                    prop.SetValue(t, sval.ToBool(), null);
+                                                }
+                                            }
+                                            else if (prop.PropertyType.FullName.Contains("System.DateTime"))
+                                            {
+                                                if (sval != string.Empty)
+                                                {
+                                                    prop.SetValue(t, sval.toDateTime(), null);
+                                                }
+                                            }
+                                            else if (prop.PropertyType.FullName.Contains("System.Decimal"))
+                                            {
+                                                if (sval != string.Empty)
+                                                {
+                                                    prop.SetValue(t, sval.ToDecimal(), null);
+                                                }
+                                            }
+                                            break;
+                                        default:
+                                            prop.SetValue(t, null, null);
+                                            break;
+                                    }
+                                }
+                                catch (Exception) { continue; }
+                                continue;
+                            }
                             catch (Exception ex)
                             {
                                 try
@@ -1256,6 +1319,7 @@ namespace Ashpro.ORM.MySql
             catch (Exception ex)
             {
                 string s = ex.Message + sval;
+                string sVal = ex.InnerException.Message;
                 throw;
             }
 
