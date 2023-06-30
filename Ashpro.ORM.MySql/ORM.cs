@@ -1201,6 +1201,9 @@ namespace Ashpro.ORM.MySql
                                         case "Decimal":
                                             prop.SetValue(t, sval.ToDecimal(), null);
                                             break;
+                                        case "Double":
+                                            prop.SetValue(t, sval.ToDouble(), null);
+                                            break;
                                         case "Boolean":
                                             prop.SetValue(t, sval.ToBool(), null);
                                             break;
@@ -1253,7 +1256,7 @@ namespace Ashpro.ORM.MySql
                                             prop.SetValue(t, sval, null);
                                             break;
                                         case "DateTime":
-                                            prop.SetValue(t, sval.toDateTime(), null);
+                                            prop.SetValue(t, Convert.ToDateTime(sval), null);
                                             break;
                                         case "Int64":
                                             prop.SetValue(t, sval.ToInt32(), null);
@@ -1263,6 +1266,9 @@ namespace Ashpro.ORM.MySql
                                             break;
                                         case "Decimal":
                                             prop.SetValue(t, sval.ToDecimal(), null);
+                                            break;
+                                        case "Double":
+                                            prop.SetValue(t, sval.ToDouble(), null);
                                             break;
                                         case "Boolean":
                                             prop.SetValue(t, sval.ToBool(), null);
@@ -1641,7 +1647,19 @@ namespace Ashpro.ORM.MySql
                             cmd.Parameters.AddWithValue(item.Name, (byte[])(item.GetValue(entity, null)));
                             break;
                         case "DateTime":
-                            cmd.Parameters.AddWithValue("@" + item.Name, GetDate((DateTime)(item.GetValue(entity, null))));
+                            var val = GetDate((DateTime)(item.GetValue(entity, null)));
+                            cmd.Parameters.AddWithValue("@" + item.Name, val);
+                            break;
+                        case "Nullable`1":
+                            if (item.PropertyType.FullName.Contains("System.DateTime"))
+                            {
+                                val = GetDate((DateTime)(item.GetValue(entity, null)));
+                                cmd.Parameters.AddWithValue("@" + item.Name, val);
+                            }
+                            else
+                            {
+                                cmd.Parameters.AddWithValue(item.Name, item.GetValue(entity, null).ToString());
+                            }
                             break;
                         default:
                             cmd.Parameters.AddWithValue(item.Name, item.GetValue(entity, null).ToString());
