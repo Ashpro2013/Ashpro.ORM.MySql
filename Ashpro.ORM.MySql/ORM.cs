@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using AshproStringExtension;
 using MySql.Data.MySqlClient;
@@ -1171,6 +1170,7 @@ namespace Ashpro.ORM.MySql
                     {
                         Type type = t.GetType();
                         PropertyInfo prop = type.GetProperty(dataReader.GetName(inc));
+                        if (prop == null) { continue; }
                         var val = dataReader.GetValue(inc);
                         sval = val.ToString();
                         if (val != DBNull.Value)
@@ -1179,7 +1179,7 @@ namespace Ashpro.ORM.MySql
                             {
                                 prop.SetValue(t, val, null);
                             }
-                            catch(NullReferenceException ex)
+                            catch (NullReferenceException ex)
                             {
                                 try
                                 {
@@ -1339,6 +1339,7 @@ namespace Ashpro.ORM.MySql
                 {
                     Type type = t.GetType();
                     PropertyInfo prop = type.GetProperty(dataReader.GetName(inc));
+                    if (prop == null) { continue; }
                     var val = dataReader.GetValue(inc);
                     if (val != DBNull.Value)
                     {
